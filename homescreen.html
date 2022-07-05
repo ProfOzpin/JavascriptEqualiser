@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>W3.CSS Template</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Lato", sans-serif
+        }
+
+        .w3-bar,
+        h1,
+        button {
+            font-family: "Montserrat", sans-serif
+        }
+
+        .fa-anchor,
+        .fa-coffee {
+            font-size: 300px
+        }
+    </style>
+</head>
+
+<body>
+    <div id="upload">
+        <header class="w3-container w3-red w3-center" style="padding:397px 20px;">
+            <h1 class="w3-margin w3-jumbo" id="lol">JAVASCRIPT EQ</h1>
+            <input type="file" name="fileupload" id='input' />
+            <div id="media" style="visibility: hidden;">
+                <audio id="sound" controls></audio>
+
+                <div class="tab">
+                    <button class="tablinks" onclick="openCity(event, 'EQ')" id="defaultOpen">Equalizer</button>
+                    <button class="tablinks" onclick="openCity(event, 'advanced')">Other</button>
+                </div>
+
+                <div id="EQ" class="tabcontent">
+                    <div class="slidecontainer">
+
+
+                        <div class="slidecontainer">
+                            <input type="range" min="-40" max="40" value="0" class="slider" id="freq1"
+                                orient="vertical">
+                            <input type="range" min="-40" max="40" value="0" class="slider" id="freq2"
+                                orient="vertical">
+                            <input type="range" min="-40" max="40" value="0" class="slider" id="freq3"
+                                orient="vertical">
+                            <input type="range" min="-40" max="40" value="0" class="slider" id="freq4"
+                                orient="vertical">
+                            <input type="range" min="-40" max="40" value="0" class="slider" id="freq5"
+                                orient="vertical">
+                            <input type="range" min="-40" max="40" value="0" class="slider" id="bass" orient="vertical">
+                            <br>
+                            <button onclick="freqdefault()">Set to Default</button>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div id="advanced" class="tabcontent">
+                    <input type="range" min="0" max="100" value="50" class="slider" id="volume" orient="vertical">
+                    <input type="range" min="0" max="200" value="100" class="slider" id="playback" orient="vertical">
+                </div>
+            </div>
+        </header>
+    </div>
+    <div>
+    </div>
+
+
+    <script>
+        input.onchange = function () {
+            document.getElementById('lol').style.visibility = 'hidden';
+            document.getElementById('input').style.visibility = 'hidden';
+            document.getElementById('media').style.visibility = 'visible';
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            context = document.getElementById('sound');
+            context.src = URL.createObjectURL(this.files[0]);
+
+            filter1 = audioCtx.createBiquadFilter();
+            filter2 = audioCtx.createBiquadFilter();
+            filter3 = audioCtx.createBiquadFilter();
+            filter4 = audioCtx.createBiquadFilter();
+            filter5 = audioCtx.createBiquadFilter();
+
+            bassFilter = audioCtx.createBiquadFilter();
+
+            sound = audioCtx.createMediaElementSource(context);
+            gainNode = audioCtx.createGain();
+
+            sound.connect(filter1);
+            filter1.connect(filter2);
+            filter2.connect(filter3);
+            filter3.connect(filter4);
+            filter4.connect(filter5);
+            filter5.connect(bassFilter);
+            bassFilter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            filter1.type = "peaking";
+            filter1.frequency.value = 60;
+            filter1.gain.value = 0;
+            filter2.type = "peaking";
+            filter2.frequency.value = 170;
+            filter2.gain.value = 0;
+            filter3.type = "peaking";
+            filter3.frequency.value = 310;
+            filter3.gain.value = 0;
+            filter4.type = "peaking";
+            filter4.frequency.value = 600;
+            filter4.gain.value = 0;
+            filter5.type = "peaking";
+            filter5.frequency.value = 1000;
+            filter5.gain.value = 0;
+
+            bassFilter.type = "lowshelf";
+            bassFilter.frequency = 350;
+            bassFilter.gain.value = 0;
+
+        }
+        document.getElementById("defaultOpen").click();
+
+        function openCity(evt, cityName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        freq1.oninput = function () {
+            filter1.gain.value = this.value;
+        }
+        freq2.oninput = function () {
+            filter2.gain.value = this.value;
+        }
+        freq3.oninput = function () {
+            filter3.gain.value = this.value;
+        }
+        freq4.oninput = function () {
+            filter4.gain.value = this.value;
+        }
+        freq5.oninput = function () {
+            filter5.gain.value = this.value;
+        }
+
+        bass.oninput = function () {
+            bassFilter.gain.value = this.value;
+        }
+
+        volume.oninput = function () {
+            context.volume = this.value / 100;
+        }
+
+        function freqdefault() {
+            document.getElementById('freq1').value = "0";
+            document.getElementById('freq2').value = "0";
+            document.getElementById('freq3').value = "0";
+            document.getElementById('freq4').value = "0";
+            document.getElementById('freq5').value = "0";
+            document.getElementById('bass').value = "0";
+            filter1.gain.value = "0";
+            filter2.gain.value = "0";
+            filter3.gain.value = "0";
+            filter4.gain.value = "0";
+            filter5.gain.value = "0";
+            bassFilter.gain.value = "0";
+        }
+
+        playback.oninput = function () {
+            context.playbackRate = this.value / 100;
+        }
+
+    </script>
+
+
+</body>
+
+</html>
